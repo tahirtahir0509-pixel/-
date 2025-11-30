@@ -7,10 +7,11 @@
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 85%; max-width: 400px; text-align: center; border-top: 6px solid #ff9800; }
-        h2 { color: #2d3436; margin: 10px 0 5px; font-size: 22px; }
+        h2 { color: #2d3436; margin: 10px 0 5px; font-size: 22px; font-weight: 700; }
+        p { color: #636e72; font-size: 14px; margin-bottom: 25px; }
         .logo-container { width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); background-color: white; }
         .logo-container img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
-        select { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #dfe6e9; border-radius: 12px; font-size: 15px; text-align: right; }
+        select { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #dfe6e9; border-radius: 12px; font-size: 15px; background-color: #fafafa; outline: none; cursor: pointer; text-align: right; color: #2d3436; }
         .btn-group { display: flex; gap: 12px; }
         button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; color: white; transition: transform 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
         .btn-in { background-color: #27ae60; }
@@ -32,7 +33,7 @@
           target="_blank" 
           id="gzingForm">
 
-        <select name="entry.1489762775" required>
+        <select name="entry.1489762775" id="teacherName" required>
             <option value="" disabled selected>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
             <option value="دیدەن عبدالرحمن اسماعیل بیروت">دیدەن عبدالرحمن اسماعیل بیروت</option>
             <option value="حکیم حمد رسول عبداللە">حکیم حمد رسول عبداللە</option>
@@ -60,12 +61,32 @@
             <option value="ئێران شێخە قادر رسول">ئێران شێخە قادر رسول</option>
         </select>
 
+        <input type="hidden" name="entry.583086231" id="actionType">
+
         <div class="btn-group">
-            <button type="submit" name="entry.583086231" value="هاتن" class="btn-in">🟢 هاتن</button>
-            <button type="submit" name="entry.583086231" value="ڕۆیشتن" class="btn-out">🔴 ڕۆیشتن</button>
+            <button type="button" class="btn-in" onclick="submitAndValidate('هاتن')">🟢 هاتن</button>
+            <button type="button" class="btn-out" onclick="submitAndValidate('ڕۆیشتن')">🔴 ڕۆیشتن</button>
         </div>
     </form>
 </div>
+
+<script>
+    function submitAndValidate(type) {
+        var nameSelect = document.getElementById("teacherName");
+        var actionInput = document.getElementById("actionType");
+        var form = document.getElementById("gzingForm");
+
+        // دڵنیابوونەوە لە هەڵبژاردنی ناو
+        if (nameSelect.value === "" || nameSelect.selectedIndex === 0) {
+            alert("⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!");
+            return;
+        }
+
+        // دانانی جۆری جوڵە و ناردنی فۆڕمەکە
+        actionInput.value = type;
+        form.submit(); // ناردنی فۆڕمەکە
+    }
+</script>
 
 </body>
 </html>
