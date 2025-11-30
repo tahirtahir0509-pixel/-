@@ -13,6 +13,7 @@
             align-items: center;
             min-height: 100vh;
             margin: 0;
+            position: relative; 
         }
         .card {
             background: white;
@@ -106,11 +107,20 @@
             color: #155724;
             border: 1px solid #c3e6cb;
         }
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
         .footer {
             margin-top: 30px;
             font-size: 11px;
             color: #b2bec3;
             letter-spacing: 1px;
+        }
+        /* دوگمەی ئەدمن لابراوە */
+        .admin-button {
+            display: none;
         }
     </style>
 </head>
@@ -163,52 +173,55 @@
 </div>
 
 <script>
+    // ⚠️ لینکی Web Appە نوێیەکەت!
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxUS5Dh0NfNpTL78zpfTN-24EcgUmNC1c4ndz4FEViXo0k6QinV-OC5ieWopu75-VnUzA/exec";
+
     function submitData(type) {
         var nameSelect = document.getElementById("teacherName");
         var name = nameSelect.value;
         var messageDiv = document.getElementById("message");
 
-        // دڵنیابوونەوە لە هەڵبژاردنی ناو
         if (name === "") {
             alert("⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!");
             return;
         }
 
-        // نیشاندانی پەیامی کارکردن
         messageDiv.style.display = "block";
         messageDiv.className = "";
         messageDiv.style.backgroundColor = "#fff3cd";
         messageDiv.style.color = "#856404";
         messageDiv.innerText = "⏳ ...تکایە چاوەڕێ بە";
         
-        // ئامادەکردنی داتاکان
-        var formURL = "https://docs.google.com/forms/d/e/1FAIpQLScnJavka4rw5_wZoacITj3M_AVx-uGxJ2fITRO3lhTLaZXiaw/formResponse";
-        
         var formData = new FormData();
-        formData.append("entry.1489762775", name); // IDی ناو
-        formData.append("entry.583086231", type);  // IDی هاتن/ڕۆیشتن
+        formData.append("teacherName", name); 
+        formData.append("type", type);        
 
-        // ناردنی داتا بێ ئەوەی پەڕەکە بگۆڕێت (پێویستە سایتەکە HTTPS بێت کە ئێستا هەتە)
-        fetch(formURL, {
+        fetch(WEB_APP_URL, {
             method: "POST",
-            mode: "no-cors",
-            body: formData
-        }).then(function(response) {
-            // سەرکەوتن بە تەواوی
-            messageDiv.className = "success";
-            messageDiv.innerHTML = "✅ بەڕێز <b>" + name + "</b><br>تۆماری <b>" + type + "</b> سەرکەوتوو بوو.";
-            
-            // پاککردنەوە
-            setTimeout(function() {
-                messageDiv.style.display = "none";
-                nameSelect.value = ""; 
-            }, 3000);
-
-        }).catch(function(error) {
-            // ئەمە زۆر بە دەگمەن ڕوودەدات لەسەر HTTPS
-            messageDiv.style.backgroundColor = "#f8d7da";
-            messageDiv.style.color = "#721c24";
-            messageDiv.innerText = "❌ کێشە لە ناردن ڕوویدا. دووبارە تاقی بکەرەوە.";
+            body: formData,
+        })
+        .then(response => response.text())
+        .then(data => {
+            if (data.includes("SUCCESS")) {
+                var now = new Date();
+                var time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+                var date = (now.getMonth() + 1) + "/" + now.getDate() + "/" + now.getFullYear();
+                
+                messageDiv.className = "success";
+                messageDiv.innerHTML = "✅ بەڕێز <b>" + name + "</b><br>تۆماری <b>" + type + "</b> سەرکەوتوو بوو.<br>کات: " + time + " - بەروار: " + date;
+                
+                setTimeout(function() {
+                    messageDiv.style.display = "none";
+                    nameSelect.value = ""; 
+                }, 5000);
+            } else {
+                messageDiv.className = "error";
+                messageDiv.innerText = "❌ کێشە لە تۆمارکردن ڕوویدا. دووبارە تاقی بکەرەوە.";
+            }
+        })
+        .catch(error => {
+            messageDiv.className = "error";
+            messageDiv.innerText = "❌ کێشە لە پەیوەندی: " + error.message;
         });
     }
 </script>
