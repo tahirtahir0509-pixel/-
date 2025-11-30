@@ -3,115 +3,18 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>قوتابخانەی گزنگ - ئامادەبوون</title>
+    <title>قوتابخانەی گزنگ - کۆتایی</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
-        .card {
-            background: white;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            width: 85%;
-            max-width: 400px;
-            text-align: center;
-            border-top: 6px solid #ff9800;
-        }
-        h2 {
-            color: #2d3436;
-            margin: 10px 0 5px;
-            font-size: 22px;
-            font-weight: 700;
-        }
-        p {
-            color: #636e72;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .logo-container {
-            width: 120px;
-            height: 120px;
-            margin: 0 auto 15px;
-            border-radius: 50%;
-            overflow: hidden;
-            border: 4px solid #fff;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            background-color: white;
-        }
-        .logo-container img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-            padding: 5px;
-        }
-        select {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #dfe6e9;
-            border-radius: 12px;
-            font-size: 15px;
-            background-color: #fafafa;
-            outline: none;
-            cursor: pointer;
-            text-align: right;
-            color: #2d3436;
-        }
-        select:focus {
-            border-color: #ff9800;
-            background-color: #fff;
-        }
-        .btn-group {
-            display: flex;
-            gap: 12px;
-        }
-        button {
-            flex: 1;
-            padding: 16px;
-            border: none;
-            border-radius: 12px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.1s;
-            color: white;
-        }
-        button:active {
-            transform: scale(0.96);
-        }
-        .btn-in {
-            background-color: #27ae60;
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
-        }
-        .btn-out {
-            background-color: #e74c3c;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-        }
-        #message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .footer {
-            margin-top: 30px;
-            font-size: 11px;
-            color: #b2bec3;
-            letter-spacing: 1px;
-        }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f0f4f8; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .card { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.08); width: 85%; max-width: 400px; text-align: center; border-top: 6px solid #ff9800; }
+        h2 { color: #2d3436; margin: 10px 0 5px; font-size: 22px; }
+        .logo-container { width: 120px; height: 120px; margin: 0 auto 15px; border-radius: 50%; overflow: hidden; border: 4px solid #fff; box-shadow: 0 5px 15px rgba(0,0,0,0.1); background-color: white; }
+        .logo-container img { width: 100%; height: 100%; object-fit: contain; padding: 5px; }
+        select { width: 100%; padding: 15px; margin-bottom: 20px; border: 2px solid #dfe6e9; border-radius: 12px; font-size: 15px; text-align: right; }
+        .btn-group { display: flex; gap: 12px; }
+        button { flex: 1; padding: 16px; border: none; border-radius: 12px; font-size: 18px; font-weight: bold; cursor: pointer; color: white; transition: transform 0.1s; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .btn-in { background-color: #27ae60; }
+        .btn-out { background-color: #e74c3c; }
     </style>
 </head>
 <body>
@@ -122,96 +25,47 @@
     </div>
     
     <h2>قوتابخانەی بنەڕەتی گزنگ</h2>
-    <p>تۆمارکردنی ئامادەبوونی مامۆستایان</p>
+    <p>تکایە هەنگاوێک هەڵبژێرە</p>
 
-    <select id="teacherName">
-        <option value="" disabled selected>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
-        <option value="دیدەن عبدالرحمن اسماعیل بیروت">دیدەن عبدالرحمن اسماعیل بیروت</option>
-        <option value="حکیم حمد رسول عبداللە">حکیم حمد رسول عبداللە</option>
-        <option value="سارێژ خضر حمد رسول">سارێژ خضر حمد رسول</option>
-        <option value="کانیاو ناصر حسن احمد">کانیاو ناصر حسن احمد</option>
-        <option value="بەهار حمدامین رحمن ابوبکر">بەهار حمدامین رحمن ابوبکر</option>
-        <option value="میهناز عمر ابراهیم عبداللە">میهناز عمر ابراهیم عبداللە</option>
-        <option value="اسمر لقمان احمد قادر">اسمر لقمان احمد قادر</option>
-        <option value="سەفین محمدامین عثمان حمد">سەفین محمدامین عثمان حمد</option>
-        <option value="بەهێز قادر مصطفی عبدالقادر">بەهێز قادر مصطفی عبدالقادر</option>
-        <option value="زانیار مغدید محمد رسول">زانیار مغدید محمد رسول</option>
-        <option value="سۆنیا فریاد عزیز مصطفی">سۆنیا فریاد عزیز مصطفی</option>
-        <option value="ئاشتی محسین سعید صوفی">ئاشتی محسین سعید صوفی</option>
-        <option value="نیاز حسن حسین حمەسور">نیاز حسن حسین حمەسور</option>
-        <option value="نەرمین فارس اسماعیل علی">نەرمین فارس اسماعیل علی</option>
-        <option value="کاروان عبدالرحمن اسماعیل بیروت">کاروان عبدالرحمن اسماعیل بیروت</option>
-        <option value="دیلان طالب بیروت محمود">دیلان طالب بیروت محمود</option>
-        <option value="بەهرە احمد قادر محمدامین">بەهرە احمد قادر محمدامین</option>
-        <option value="چرۆ مرشد مصطفى عزیز">چرۆ مرشد مصطفى عزیز</option>
-        <option value="مەستان عبداللە قادر اورحمان">مەستان عبداللە قادر اورحمان</option>
-        <option value="محمد ایوب رسول مصطفی">محمد ایوب رسول مصطفی</option>
-        <option value="نیگار اسود احمد حمد">نیگار اسود احمد حمد</option>
-        <option value="کارا همداد رفیق سعید">کارا همداد رفیق سعید</option>
-        <option value="شێواو ابراهیم احمد نبی">شێواو ابراهیم احمد نبی</option>
-        <option value="ئێران شێخە قادر رسول">ئێران شێخە قادر رسول</option>
-    </select>
+    <form action="https://docs.google.com/forms/d/e/1FAIpQLSc7BN16nDPduI4ovj3kR6Yi2W4KJmqluYC2fb0ikTcKGtgYIw/formResponse" 
+          method="post" 
+          target="_blank" 
+          id="gzingForm">
 
-    <div class="btn-group">
-        <button type="button" class="btn-in" onclick="submitData('هاتن')">🟢 هاتن</button>
-        <button type="button" class="btn-out" onclick="submitData('ڕۆیشتن')">🔴 ڕۆیشتن</button>
-    </div>
+        <select name="entry.1489762775" required>
+            <option value="" disabled selected>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
+            <option value="دیدەن عبدالرحمن اسماعیل بیروت">دیدەن عبدالرحمن اسماعیل بیروت</option>
+            <option value="حکیم حمد رسول عبداللە">حکیم حمد رسول عبداللە</option>
+            <option value="سارێژ خضر حمد رسول">سارێژ خضر حمد رسول</option>
+            <option value="کانیاو ناصر حسن احمد">کانیاو ناصر حسن احمد</option>
+            <option value="بەهار حمدامین رحمن ابوبکر">بەهار حمدامین رحمن ابوبکر</option>
+            <option value="میهناز عمر ابراهیم عبداللە">میهناز عمر ابراهیم عبداللە</option>
+            <option value="اسمر لقمان احمد قادر">اسمر لقمان احمد قادر</option>
+            <option value="سەفین محمدامین عثمان حمد">سەفین محمدامین عثمان حمد</option>
+            <option value="بەهێز قادر مصطفی عبدالقادر">بەهێز قادر مصطفی عبدالقادر</option>
+            <option value="زانیار مغدید محمد رسول">زانیار مغدید محمد رسول</option>
+            <option value="سۆنیا فریاد عزیز مصطفی">سۆنیا فریاد عزیز مصطفی</option>
+            <option value="ئاشتی محسین سعید صوفی">ئاشتی محسین سعید صوفی</option>
+            <option value="نیاز حسن حسین حمەسور">نیاز حسن حسین حمەسور</option>
+            <option value="نەرمین فارس اسماعیل علی">نەرمین فارس اسماعیل علی</option>
+            <option value="کاروان عبدالرحمن اسماعیل بیروت">کاروان عبدالرحمن اسماعیل بیروت</option>
+            <option value="دیلان طالب بیروت محمود">دیلان طالب بیروت محمود</option>
+            <option value="بەهرە احمد قادر محمدامین">بەهرە احمد قادر محمدامین</option>
+            <option value="چرۆ مرشد مصطفى عزیز">چرۆ مرشد مصطفى عزیز</option>
+            <option value="مەستان عبداللە قادر اورحمان">مەستان عبداللە قادر اورحمان</option>
+            <option value="محمد ایوب رسول مصطفی">محمد ایوب رسول مصطفی</option>
+            <option value="نیگار اسود احمد حمد">نیگار اسود احمد حمد</option>
+            <option value="کارا همداد رفیق سعید">کارا همداد رفیق سعید</option>
+            <option value="شێواو ابراهیم احمد نبی">شێواو ابراهیم احمد نبی</option>
+            <option value="ئێران شێخە قادر رسول">ئێران شێخە قادر رسول</option>
+        </select>
 
-    <div id="message"></div>
-    
-    <div class="footer">Developed by Gzing School IT © 2025</div>
+        <div class="btn-group">
+            <button type="submit" name="entry.583086231" value="هاتن" class="btn-in">🟢 هاتن</button>
+            <button type="submit" name="entry.583086231" value="ڕۆیشتن" class="btn-out">🔴 ڕۆیشتن</button>
+        </div>
+    </form>
 </div>
-
-<script>
-    function submitData(type) {
-        var nameSelect = document.getElementById("teacherName");
-        var name = nameSelect.value;
-        var messageDiv = document.getElementById("message");
-
-        // دڵنیابوونەوە لە هەڵبژاردنی ناو
-        if (name === "") {
-            alert("⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!");
-            return;
-        }
-
-        // نیشاندانی پەیامی کارکردن
-        messageDiv.style.display = "block";
-        messageDiv.className = "";
-        messageDiv.style.backgroundColor = "#fff3cd";
-        messageDiv.style.color = "#856404";
-        messageDiv.innerText = "⏳ ...تکایە چاوەڕێ بە";
-        
-        // ئامادەکردنی داتاکان
-        // !!! ئەمە بە لینکی نوێی فۆڕمە نوێیەکە چاک کراوە !!!
-        var formURL = "https://docs.google.com/forms/d/e/1FAIpQLSc7BN16nDPduI4ovj3kR6Yi2W4KJmqluYC2fb0ikTcKGtgYIw/formResponse";
-        
-        var formData = new FormData();
-        formData.append("entry.1489762775", name); // IDی ناو
-        formData.append("entry.583086231", type);  // IDی هاتن/ڕۆیشتن
-
-        // ناردنی داتا بێ ئەوەی پەڕەکە بگۆڕێت
-        fetch(formURL, {
-            method: "POST",
-            mode: "no-cors",
-            body: formData
-        }).then(function(response) {
-            // سەرکەوتن بە تەواوی
-            messageDiv.className = "success";
-            messageDiv.innerHTML = "✅ بەڕێز <b>" + name + "</b><br>تۆماری <b>" + type + "</b> سەرکەوتوو بوو.";
-            
-            // پاککردنەوە
-            setTimeout(function() {
-                messageDiv.style.display = "none";
-                nameSelect.value = ""; 
-            }, 3000);
-
-        }).catch(function(error) {
-            messageDiv.style.backgroundColor = "#f8d7da";
-            messageDiv.style.color = "#721c24";
-            messageDiv.innerText = "❌ کێشە لە ناردن ڕوویدا. دووبارە تاقی بکەرەوە.";
-        });
-    }
-</script>
 
 </body>
 </html>
