@@ -182,13 +182,14 @@
         messageDiv.innerText = "⏳ ...تکایە چاوەڕێ بە";
         
         // ئامادەکردنی داتاکان
-        var formURL = "https://docs.google.com/forms/d/e/1FAIpQLScnJavka4rw5_wZoacITj3M_AVx-uGxJ2fITRO3lhTLaZXiaw/formResponse";
+        // !!! ئەمە بە لینکی نوێی فۆڕمە نوێیەکە چاک کراوە !!!
+        var formURL = "https://docs.google.com/forms/d/e/1FAIpQLSc7BN16nDPduI4ovj3kR6Yi2W4KJmqluYC2fb0ikTcKGtgYIw/formResponse";
         
         var formData = new FormData();
         formData.append("entry.1489762775", name); // IDی ناو
         formData.append("entry.583086231", type);  // IDی هاتن/ڕۆیشتن
 
-        // ناردنی داتا بێ ئەوەی پەڕەکە بگۆڕێت (FETCH)
+        // ناردنی داتا بێ ئەوەی پەڕەکە بگۆڕێت
         fetch(formURL, {
             method: "POST",
             mode: "no-cors",
@@ -205,7 +206,6 @@
             }, 3000);
 
         }).catch(function(error) {
-            // ئەمە زۆر بە دەگمەن ڕوودەدات لەسەر HTTPS
             messageDiv.style.backgroundColor = "#f8d7da";
             messageDiv.style.color = "#721c24";
             messageDiv.innerText = "❌ کێشە لە ناردن ڕوویدا. دووبارە تاقی بکەرەوە.";
