@@ -2,20 +2,45 @@
 <html lang="ku" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>قوتابخانەی گزنگ - ئامادەبوون</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
+        /* General Styles for RTL and Font */
+        body { 
+            font-family: 'Noto Sans Arabic', sans-serif; 
+            background-color: #f0f4f8; 
+            transition: all 0.3s ease; 
+            min-height: 100vh;
+        }
+        
+        /* Fixed Navigation Bar Styling */
+        #navigation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 50;
+            padding: 1rem 0 0 0;
+            background-color: transparent;
+        }
+        #app {
+            width: 100%;
+            padding-top: 6rem; 
+        }
+
+        /* --- Teacher View Original Styles (Card View) --- */
+        body:not(.admin-mode) #app {
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            position: relative; 
+            min-height: calc(100vh - 6rem); 
+            padding-top: 2rem; 
+            padding-bottom: 2rem;
         }
-        .card {
+        .teacher-card-style {
             background: white;
             padding: 30px;
             border-radius: 20px;
@@ -25,18 +50,7 @@
             text-align: center;
             border-top: 6px solid #ff9800;
         }
-        h2 {
-            color: #2d3436;
-            margin: 10px 0 5px;
-            font-size: 22px;
-            font-weight: 700;
-        }
-        p {
-            color: #636e72;
-            font-size: 14px;
-            margin-bottom: 25px;
-        }
-        .logo-container {
+        .teacher-logo-style {
             width: 120px;
             height: 120px;
             margin: 0 auto 15px;
@@ -46,34 +60,32 @@
             box-shadow: 0 5px 15px rgba(0,0,0,0.1);
             background-color: white;
         }
-        .logo-container img {
+        .teacher-logo-style img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             padding: 5px;
         }
-        select {
-            width: 100%;
-            padding: 15px;
-            margin-bottom: 20px;
-            border: 2px solid #dfe6e9;
-            border-radius: 12px;
-            font-size: 15px;
-            background-color: #fafafa;
-            outline: none;
-            cursor: pointer;
-            text-align: right;
+        .teacher-h2-style {
             color: #2d3436;
+            margin: 10px 0 5px;
+            font-size: 22px;
+            font-weight: 700;
         }
-        select:focus {
-            border-color: #ff9800;
-            background-color: #fff;
+        .teacher-p-style {
+            color: #636e72;
+            font-size: 14px;
+            margin-bottom: 25px;
         }
-        .btn-group {
+
+        /* Button group for select view */
+        .btn-group-select {
             display: flex;
             gap: 12px;
         }
-        button {
+        .btn-in { background-color: #27ae60; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
+        .btn-out { background-color: #e74c3c; box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3); }
+        .btn-select-style {
             flex: 1;
             padding: 16px;
             border: none;
@@ -84,147 +96,613 @@
             transition: transform 0.1s;
             color: white;
         }
-        button:active {
-            transform: scale(0.96);
+
+
+        /* Select and Button Overrides */
+        select { transition: all 0.3s ease; text-align: right; }
+        button:active { transform: scale(0.96); }
+
+        /* Input Field Base (used by both views) */
+        .input-field { border: 2px solid #dfe6e9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .input-field:focus { border-color: #ff9800; background-color: #fff; outline: none; }
+
+        /* Specific select style for teacher view */
+        .input-field.teacher-select-style {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 12px;
+            font-size: 15px;
+            background-color: #fafafa;
+            border: 2px solid #dfe6e9;
         }
-        .btn-in {
-            background-color: #27ae60;
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3);
+        
+        /* UPDATED: Extra small custom footer style */
+        .tiny-footer {
+            margin-top: 1.5rem; 
+            font-size: 9px; 
+            opacity: 0.6; 
+            letter-spacing: 0.5px;
+            font-weight: 500;
+            text-align: center;
         }
-        .btn-out {
-            background-color: #e74c3c;
-            box-shadow: 0 4px 10px rgba(231, 76, 60, 0.3);
-        }
-        #message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 14px;
-            display: none;
-        }
-        .success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-        .error {
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-        }
-        .footer {
-            margin-top: 30px;
-            font-size: 11px;
-            color: #b2bec3;
-            letter-spacing: 1px;
-        }
-        .admin-button {
-            display: none;
+
+
+        /* Admin Mode Styles (Keeping these intact) */
+        body.admin-mode { background-color: #1e293b; color: #f1f5f9; }
+        .admin-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
+        .admin-mode .input-field { background-color: #1e293b; border-color: #334155; color: white; }
+        .admin-mode .input-field:focus { border-color: #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.3); }
+        .admin-mode .bg-white { background-color: #334155 !important; }
+        .admin-mode .text-gray-800 { color: #f1f5f9 !important; }
+        .admin-mode .text-gray-600 { color: #cbd5e1 !important; }
+
+        /* Report Table Styles */
+        .report-table th { background-color: #f9fafb; color: #1f2937; }
+        .admin-mode .report-table th { background-color: #475569; color: #f1f5f9; }
+        .report-table td, .report-table th { padding: 12px; border: 1px solid #e5e7eb; }
+        .report-table { border-collapse: collapse; }
+        .admin-mode .report-table td, .admin-mode .report-table th { border-color: #475569; }
+        
+        /* Time Column Specific Styling */
+        .time-entry { color: #27ae60; font-weight: bold; }
+        .time-exit { color: #e74c3c; font-weight: bold; }
+
+        /* Helper for Loading */
+        #loadingOverlay {
+            transition: opacity 0.3s ease;
         }
     </style>
 </head>
-<body>
+<body class="min-h-screen">
 
-<div class="card">
-    <div class="logo-container">
-        <img src="https://i.ibb.co/7xTBmQJ8/logo-gzng.png" alt="Logo Gzing">
-    </div>
-    
-    <h2>قوتابخانەی بنەڕەتی گزنگ</h2>
-    <p>تۆمارکردنی ئامادەبوونی مامۆستایان</p>
+    <script>
+        // ⚠️ لینکی Web App ە نوێیەکەت لێرە دابنێ.
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwq_J4VSLm2PH_fD_Hdc3B0OLO4S4T8advLXC-G2kgCVHH1V7EEpwG5sN0XBoYRhfhT/exec"; // گۆڕینی بە لینکەکەی خۆت
+        
+        // گۆڕاوە جیهانییەکان
+        let state = {
+            currentView: 'teacher', 
+            isAdminAuthenticated: false,
+            teachers: [
+                "دیدەن عبدالرحمن اسماعیل بیروت", "حکیم حمد رسول عبداللە", "سارێژ خضر حمد رسول", 
+                "کانیاو ناصر حسن احمد", "بەهار حمدامین رحمن ابوبکر", "میهناز عمر ابراهیم عبداللە", 
+                "اسمر لقمان احمد قادر", "سەفین محمدامین عثمان حمد", "بەهێز قادر مصطفی عبدالقادر", 
+                "زانیار مغدید محمد رسول", "سۆنیا فریاد عزیز مصطفی", "ئاشتی محسین سعید صوفی", 
+                "نیاز حسن حسین حمەسور", "نەرمین فارس اسماعیل علی", "کاروان عبدالرحمن اسماعیل بیروت", 
+                "دیلان طالب بیروت محمود", "بەهرە احمد قادر محمدامین", "چرۆ مرشد مصطفى عزیز", 
+                "مەستان عبداللە قادر اورحمان", "محمد ایوب رسول مصطفی", "نیگار اسود احمد حمد", 
+                "کارا همداد رفیق سعید", "شاهۆز ابراهیم احمد نبی", "ئێران شێخە قادر رسول"
+            ],
+            attendanceData: [], 
+            login: { username: '', password: '' },
+            report: {
+                period: 'daily', 
+                date: new Date().toISOString().split('T')[0] // today's date YYYY-MM-DD
+            },
+            teacherName: ''
+        };
 
-    <select id="teacherName">
-        <option value="" disabled selected>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
-        <option value="دیدەن عبدالرحمن اسماعیل بیروت">دیدەن عبدالرحمن اسماعیل بیروت</option>
-        <option value="حکیم حمد رسول عبداللە">حکیم حمد رسول عبداللە</option>
-        <option value="سارێژ خضر حمد رسول">سارێژ خضر حمد رسول</option>
-        <option value="کانیاو ناصر حسن احمد">کانیاو ناصر حسن احمد</option>
-        <option value="بەهار حمدامین رحمن ابوبکر">بەهار حمدامین رحمن ابوبکر</option>
-        <option value="میهناز عمر ابراهیم عبداللە">میهناز عمر ابراهیم عبداللە</option>
-        <option value="اسمر لقمان احمد قادر">اسمر لقمان احمد قادر</option>
-        <option value="سەفین محمدامین عثمان حمد">سەفین محمدامین عثمان حمد</option>
-        <option value="بەهێز قادر مصطفی عبدالقادر">بەهێز قادر مصطفی عبدالقادر</option>
-        <option value="زانیار مغدید محمد رسول">زانیار مغدید محمد رسول</option>
-        <option value="سۆنیا فریاد عزیز مصطفی">سۆنیا فریاد عزیز مصطفی</option>
-        <option value="ئاشتی محسین سعید صوفی">ئاشتی محسین سعید صوفی</option>
-        <option value="نیاز حسن حسین حمەسور">نیاز حسن حسین حمەسور</option>
-        <option value="نەرمین فارس اسماعیل علی">نەرمین فارس اسماعیل علی</option>
-        <option value="کاروان عبدالرحمن اسماعیل بیروت">کاروان عبدالرحمن اسماعیل بیروت</option>
-        <option value="دیلان طالب بیروت محمود">دیلان طالب بیروت محمود</option>
-        <option value="بەهرە احمد قادر محمدامین">بەهرە احمد قادر محمدامین</option>
-        <option value="چرۆ مرشد مصطفى عزیز">چرۆ مرشد مصطفى عزیز</option>
-        <option value="مەستان عبداللە قادر اورحمان">مەستان عبداللە قادر اورحمان</option>
-        <option value="محمد ایوب رسول مصطفی">محمد ایوب رسول مصطفی</option>
-        <option value="نیگار اسود احمد حمد">نیگار اسود احمد حمد</option>
-        <option value="کارا همداد رفیق سعید">کارا همداد رفیق سعید</option>
-        <option value="شاهۆز ابراهیم احمد نبی">شاهۆز ابراهیم احمد نبی</option>
-        <option value="ئێران شێخە قادر رسول">ئێران شێخە قادر رسول</option>
-    </select>
+        const TEACHERS_LIST = state.teachers.map(name => `<option value="${name}">${name}</option>`).join('');
 
-    <div class="btn-group">
-        <button type="button" class="btn-in" onclick="submitData('هاتن')">🟢 هاتن</button>
-        <button type="button" class="btn-out" onclick="submitData('ڕۆیشتن')">🔴 ڕۆیشتن</button>
-    </div>
+        // --- Utility Functions ---
 
-    <div id="message"></div>
-    
-    <div class="footer">Developed by Gzing School IT © 2025</div>
-</div>
-
-<script>
-    // ⚠️ لینکی Web Appە نوێیەکەت!
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxM4ctJDF40KBEct4rcRvRnCTW0TXwM-DT8A5YaMWLveAQpgGjz25LpSuJTL-43SqpJ/exec";
-
-    function submitData(type) {
-        var nameSelect = document.getElementById("teacherName");
-        var name = nameSelect.value;
-        var messageDiv = document.getElementById("message");
-
-        if (name === "") {
-            alert("⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!");
-            return;
+        // بۆ گۆڕینی داتای مێتا و دروستکردنی فایلی Excel (CSV)
+        function convertToCSV(data) {
+            // سەر ستوونەکان
+            const header = ["ناوی مامۆستا", "بەروار", "ڕۆژ", "کاتی هاتن", "کاتی ڕۆیشتن"];
+            const rows = data.map(row => [
+                row.teacherName,
+                // گۆڕینی فۆرماتی MM/dd/yyyy بۆ شێوەی ئاسانتر بۆ بینین
+                formatDateForDisplay(row.date),
+                getKurdishDay(row.date),
+                row.entryTime || 'نادیار',
+                row.exitTime || 'نادیار' 
+            ]);
+            return [header, ...rows];
         }
 
-        messageDiv.style.display = "block";
-        messageDiv.className = "";
-        messageDiv.style.backgroundColor = "#fff3cd";
-        messageDiv.style.color = "#856404";
-        messageDiv.innerText = "⏳ ...تکایە چاوەڕێ بە";
-        
-        var formData = new FormData();
-        formData.append("teacherName", name); 
-        formData.append("type", type);        
-
-        fetch(WEB_APP_URL, {
-            method: "POST",
-            body: formData,
-        })
-        .then(response => response.text())
-        .then(data => {
-            if (data.includes("SUCCESS")) {
-                var now = new Date();
-                var time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-                var date = (now.getMonth() + 1) + "/" + now.getDate() + "/" + now.getFullYear();
-                
-                messageDiv.className = "success";
-                messageDiv.innerHTML = "✅ بەڕێز <b>" + name + "</b><br>تۆماری <b>" + type + "</b> سەرکەوتوو بوو.<br>کات: " + time + " - بەروار: " + date;
-                
-                setTimeout(function() {
-                    messageDiv.style.display = "none";
-                    nameSelect.value = ""; 
-                }, 5000);
-            } else {
-                messageDiv.className = "error";
-                messageDiv.innerText = "❌ کێشە لە تۆمارکردن ڕوویدا. دووبارە تاقی بکەرەوە.";
+        function downloadExcel(data, filename) {
+            if (!Array.isArray(data) || data.length === 0) {
+                alert("⚠️ ناتوانیت فایلەکە دابەزێنیت چونکە هیچ تۆمارێک نییە.");
+                return;
             }
-        })
-        .catch(error => {
-            messageDiv.className = "error";
-            messageDiv.innerText = "❌ کێشە لە پەیوەندی: " + error.message;
-        });
-    }
-</script>
+            
+            const ws = XLSX.utils.aoa_to_sheet(convertToCSV(data));
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "ڕاپۆرتی ئامادەبوون");
+            
+            // چاککردنەوەی ناوی فایل بۆ دڵنیابوونەوە لە نەبوونی کارەکتەری نادروست
+            const safeFilename = filename.replace(/[^a-z0-9]/gi, '_'); 
+            XLSX.writeFile(wb, safeFilename + ".xlsx");
+        }
 
+        // وەرگرتنی ڕۆژی هەفتە بە کوردی
+        function getKurdishDay(dateString) {
+            let date;
+            try {
+                 if (dateString.includes('/')) {
+                    // Assuming MM/dd/yyyy from GAS
+                    const parts = dateString.split('/');
+                    date = new Date(parts[2], parts[0] - 1, parts[1]);
+                } else if (dateString.includes('-')) {
+                    // Assuming YYYY-MM-DD from input[date]
+                    const parts = dateString.split('-');
+                    date = new Date(parts[0], parts[1] - 1, parts[2]);
+                } else {
+                    return "نادیار";
+                }
+
+                if (isNaN(date.getTime())) return "نادیار";
+                const days = ["یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی", "شەممە"];
+                return days[date.getDay()];
+            } catch (e) {
+                return "نادیار";
+            }
+        }
+        
+        // Date formatting helper for display (MM/dd/yyyy -> long date)
+        function formatDateForDisplay(dateString) {
+            try {
+                // item date is MM/dd/yyyy, convert to ku-IQ long date
+                const parts = dateString.split('/');
+                const date = new Date(parts[2], parts[0] - 1, parts[1]);
+                return date.toLocaleDateString('ku-IQ', { day: 'numeric', month: 'long', year: 'numeric' });
+            } catch (e) {
+                return dateString;
+            }
+        }
+
+        // وەرگرتنی کات بە خولەک بۆ پشکنینی کاتی کار
+        function getTimeInMinutes(date) {
+            return date.getHours() * 60 + date.getMinutes();
+        }
+        
+        // --- API Functions ---
+
+        async function loadAttendanceData() {
+            if (state.currentView === 'teacher' && state.isAdminAuthenticated === false) return; 
+            
+            showLoading("وەرگرتنی داتای پوختکراوی ڕاپۆرت...");
+            
+            try {
+                // GAS ئێستا داتا پوخت دەکات
+                const response = await fetch(`${WEB_APP_URL}?action=get`); 
+                const data = await response.json();
+                
+                if (data && Array.isArray(data)) {
+                    state.attendanceData = data;
+                } else {
+                    state.attendanceData = [];
+                }
+            } catch (error) {
+                console.error("Error loading data:", error);
+                document.getElementById('loadingText').innerText = "کێشە لە وەرگرتنی داتا ڕوویدا.";
+                setTimeout(hideLoading, 2000);
+            } finally {
+                hideLoading();
+                render();
+            }
+        }
+
+        async function submitData(teacherName, type) {
+            var messageDiv = document.getElementById(`message-general`); 
+            
+            if (!teacherName || teacherName === '') {
+                showMessage(messageDiv, "⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!", "error");
+                return;
+            }
+
+            // --- ✅ گەڕاندنەوەی سنووری کات (Time Gates) ---
+            var now = new Date();
+            var currentTime = getTimeInMinutes(now);
+            const ENTRY_START = 7 * 60 + 30; // 07:30
+            const ENTRY_END = 10 * 60;       // 10:00
+            const EXIT_START = 10 * 60;      // 10:00
+            const EXIT_END = 16 * 60;        // 16:00 (04:00 PM)
+
+            if (type === 'هاتن') {
+                if (currentTime < ENTRY_START || currentTime >= ENTRY_END) {
+                    showMessage(messageDiv, "⛔ ناتوانیت ئێستا تۆماری هاتن بکەیت. کاتی تۆمارکردنی هاتن: 07:30 تا 10:00 بەیانی.", "error");
+                    return;
+                }
+            } else if (type === 'ڕۆیشتن') {
+                if (currentTime < EXIT_START || currentTime >= EXIT_END) {
+                    showMessage(messageDiv, "⛔ ناتوانیت ئێستا تۆماری ڕۆیشتن بکەیت. کاتی تۆمارکردنی ڕۆیشتن: 10:00 بەیانی تا 04:00 ئێوارە.", "error");
+                    return;
+                }
+            }
+            // --- کۆتایی سنووری کات ---
+            
+            showMessage(messageDiv, "⏳ ...تکایە چاوەڕێ بە", "pending");
+            
+            var formData = new FormData();
+            formData.append("teacherName", teacherName);
+            formData.append("type", type);
+
+            try {
+                const response = await fetch(WEB_APP_URL, {
+                    method: "POST",
+                    body: formData,
+                });
+                const data = await response.text();
+
+                if (data.includes("SUCCESS")) {
+                    const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
+                    const date = now.toLocaleDateString('ku-IQ');
+                    
+                    showMessage(messageDiv, `✅ بەڕێز <b>${teacherName}</b><br>تۆماری <b>${type}</b> سەرکەوتوو بوو.<br>کات: ${time} - بەروار: ${date}`, "success");
+                    
+                    setTimeout(function() {
+                        messageDiv.style.display = "none";
+                        state.teacherName = '';
+                        render();
+                    }, 5000);
+                } else {
+                    showMessage(messageDiv, "❌ کێشە لە تۆمارکردن ڕوویدا. دووبارە تاقی بکەرەوە.", "error");
+                }
+            } catch (error) {
+                showMessage(messageDiv, "❌ کێشە لە پەیوەندی: " + error.message, "error");
+            }
+        }
+
+        // --- UI Helper Functions (UNCHANGED) ---
+        
+        function showMessage(el, text, type) {
+            el.style.display = "block";
+            el.className = "";
+            let baseStyle = "margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: right;";
+
+            if (type === 'success') {
+                el.className = "success";
+                el.style.cssText = baseStyle + " background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;";
+            } else if (type === 'error') {
+                el.className = "error";
+                el.style.cssText = baseStyle + " background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;";
+            } else if (type === 'pending') {
+                el.style.cssText = baseStyle + " background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;";
+            }
+            el.innerHTML = text;
+        }
+
+        function showLoading(text) {
+            const overlay = document.getElementById('loadingOverlay');
+            document.getElementById('loadingText').innerText = text;
+            overlay.classList.remove('hidden', 'opacity-0');
+            overlay.classList.add('opacity-100');
+        }
+
+        function hideLoading() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('hidden');
+            }, 300);
+        }
+        
+        // --- Admin Logic ---
+
+        async function handleLogin() {
+            const { username, password } = state.login;
+            
+            if (!username || !password) {
+                document.getElementById('loadingText').innerText = "تکایە هەردوو ناوی بەکارهێنەر و وشەی نهێنی بنووسە.";
+                showLoading("تکایە هەردوو ناوی بەکارهێنەر و وشەی نهێنی بنووسە.");
+                setTimeout(hideLoading, 2000);
+                return;
+            }
+
+            showLoading("پشکنینی زانیاری چوونەژوورەوە...");
+
+            try {
+                const formData = new FormData();
+                formData.append("action", "login");
+                formData.append("username", username);
+                formData.append("password", password);
+
+                const response = await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    body: formData,
+                });
+                
+                const result = await response.text();
+
+                if (result.includes("SUCCESS")) { 
+                    state.isAdminAuthenticated = true;
+                    state.login = { username: '', password: '' };
+                    await loadAttendanceData(); 
+                    render();
+                } else {
+                    document.getElementById('loadingText').innerText = "ناوی بەکارهێنەر یان وشەی نهێنی هەڵەیە!";
+                    setTimeout(hideLoading, 2000);
+                }
+            } catch (error) {
+                document.getElementById('loadingText').innerText = "کێشە لە پەیوەندی بە سێرڤەر. دووبارە تاقی بکەرەوە.";
+                setTimeout(hideLoading, 2000);
+            } finally {
+                // hideLoading() only after showing the final status
+                if (!state.isAdminAuthenticated) {
+                     hideLoading();
+                }
+            }
+        }
+        
+        function handleLogout() {
+            state.isAdminAuthenticated = false;
+            state.login = { username: '', password: '' };
+            state.currentView = 'teacher';
+            render();
+        }
+
+        // 🚨 چارەسەری کۆتایی بۆ کێشەی Excel (filteredData) - چاککراو
+        function getFilteredData() {
+            // بەرواری هەڵبژێردراو بە شێوازی YYYY-MM-DD
+            const selectedDateStr = state.report.date; 
+            
+            let startDate, endDate;
+            let filtered = [];
+
+            if (state.report.period === 'daily') {
+                // بۆ daily: گۆڕینی YYYY-MM-DD بۆ MM/dd/yyyy بۆ بەراوردکردن لەگەڵ داتای GAS
+                const parts = selectedDateStr.split('-'); 
+                const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; 
+                
+                filtered = state.attendanceData.filter(item => item.date === formattedDate);
+                
+            } else if (state.report.period === 'weekly') {
+                // بۆ weekly: دۆزینەوەی دەستپێک و کۆتایی هەفتە
+                const today = new Date(selectedDateStr);
+                const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
+                const daysToSubtract = (dayOfWeek + 1) % 7; // دەستپێکی هەفتە یەکشەممە بێت
+
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - daysToSubtract);
+                startDate.setHours(0, 0, 0, 0);
+
+                endDate = new Date(startDate);
+                endDate.setDate(startDate.getDate() + 6);
+                endDate.setHours(23, 59, 59, 999);
+                
+            } else if (state.report.period === 'monthly') {
+                // بۆ monthly: دۆزینەوەی دەستپێک و کۆتایی مانگ
+                const year = parseInt(selectedDateStr.split('-')[0]);
+                const month = parseInt(selectedDateStr.split('-')[1]) - 1; 
+                
+                startDate = new Date(year, month, 1);
+                endDate = new Date(year, month + 1, 0); 
+                startDate.setHours(0, 0, 0, 0);
+                endDate.setHours(23, 59, 59, 999);
+            }
+
+            // Filter for weekly/monthly
+            if (state.report.period !== 'daily') {
+                 filtered = state.attendanceData.filter(item => {
+                    let itemDate;
+                    try {
+                        // Item date is MM/dd/yyyy from GAS
+                        const dateParts = item.date.split('/');
+                        itemDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
+                        itemDate.setHours(0, 0, 0, 0); 
+                    } catch(e) {
+                        return false;
+                    }
+
+                    if (isNaN(itemDate.getTime())) return false;
+                    return itemDate >= startDate && itemDate <= endDate;
+                });
+            }
+            
+            // دڵنیابوونەوە لە ڕیزکردنی دروست
+            return filtered.sort((a, b) => {
+                // گۆڕینی بەروارەکان بۆ ئۆبجێکتی Date بۆ بەراوردکردن 
+                const dateA = new Date(a.date);
+                const dateB = new Date(b.date);
+
+                if (dateA - dateB !== 0) {
+                    return dateB - dateA; // ڕیزکردن بەپێی بەرواری نوێ
+                }
+                
+                // ئەگەر بەروارەکان یەکسان بن، ڕیزکردن بەپێی کاتی هاتن
+                const timeA = new Date(`2000/01/01 ${a.entryTime}`);
+                const timeB = new Date(`2000/01/01 ${b.entryTime}`);
+                return timeA - timeB; // کاتی هاتنی پێشتر
+            });
+        }
+        
+        // --- Render Functions (Admin View Updated for summarized data) ---
+
+        function renderTeacherView() {
+            return `
+            <div class="teacher-card-style" id="teacher-view">
+                <div class="teacher-logo-style">
+                    <img src="https://i.ibb.co/7xTBmQJ8/logo-gzng.png" alt="Logo Gzing">
+                </div>
+                
+                <h2 class="teacher-h2-style">قوتابخانەی بنەڕەتی گزنگ</h2>
+                <p class="teacher-p-style">تۆمارکردنی ئامادەبوونی مامۆستایان</p>
+
+                <select id="teacherName" onchange="state.teacherName = this.value" value="${state.teacherName}" class="input-field teacher-select-style">
+                    <option value="" disabled ${state.teacherName === '' ? 'selected' : ''}>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
+                    ${TEACHERS_LIST}
+                </select>
+
+                <div class="btn-group-select">
+                    <button type="button" class="btn-select-style btn-in" onclick="submitData(state.teacherName, 'هاتن')">🟢 هاتن</button>
+                    <button type="button" class="btn-select-style btn-out" onclick="submitData(state.teacherName, 'ڕۆیشتن')">🔴 ڕۆیشتن</button>
+                </div>
+
+                <div id="message-general" style="display:none;"></div>
+                
+                <div class="tiny-footer text-gray-500 mt-6">Developed by Tahir Tahir</div>
+            </div>`;
+        }
+
+        function renderAdminLogin() {
+            return `
+            <div class="admin-card max-w-sm mx-auto p-8 rounded-3xl text-center my-20">
+                <h2 class="text-3xl font-black text-white mb-6">چوونەژوورەوەی ئەدمین</h2>
+                <div class="space-y-4">
+                    <input type="text" id="username" placeholder="ناوی بەکارهێنەر" oninput="state.login.username = this.value" value="${state.login.username}" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold text-lg">
+                    <input type="password" id="password" placeholder="وشەی نهێنی" oninput="state.login.password = this.value" value="${state.login.password}" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold text-lg">
+                    <button onclick="handleLogin()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-black py-3 rounded-xl transition duration-300 shadow-lg shadow-yellow-500/30 text-lg mt-4">چوونەژوورەوە</button>
+                </div>
+            </div>`;
+        }
+        
+        function renderAdminView() {
+            const filteredData = getFilteredData();
+            let titleText = '';
+            
+            if (state.report.period === 'daily') {
+                // Format the report date from YYYY-MM-DD
+                const parts = state.report.date.split('-'); 
+                const dateDisplay = formatDateForDisplay(`${parts[1]}/${parts[2]}/${parts[0]}`); 
+                titleText = `ڕاپۆرتی ڕۆژانە بۆ: ${dateDisplay}`;
+            } else if (state.report.period === 'weekly') {
+                const today = new Date(state.report.date);
+                const dayOfWeek = today.getDay(); 
+                const daysToSubtract = (dayOfWeek + 1) % 7; 
+                let start = new Date(today);
+                start.setDate(today.getDate() - daysToSubtract);
+                let end = new Date(start);
+                end.setDate(start.getDate() + 6);
+                titleText = `ڕاپۆرتی هەفتانە: ${start.toLocaleDateString('ku-IQ')} تا ${end.toLocaleDateString('ku-IQ')}`;
+            } else if (state.report.period === 'monthly') {
+                titleText = `ڕاپۆرتی مانگانە بۆ: ${new Date(state.report.date).toLocaleDateString('ku-IQ', { year: 'numeric', month: 'long' })}`;
+            }
+
+            return `
+            <div class="max-w-7xl mx-auto px-4 py-8">
+                <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
+                    <h1 class="text-3xl font-black text-white">🗄️ پانێڵی ئەدمین</h1>
+                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl transition shadow-md">دەرچوون</button>
+                </div>
+                
+                <div class="admin-card rounded-xl p-6 mb-8">
+                    <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-3 text-yellow-500">کۆنترۆڵی ڕاپۆرت</h2>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                        <div>
+                            <label class="block text-sm font-bold mb-2 text-gray-300">ماوەی ڕاپۆرت</label>
+                            <select onchange="state.report.period = this.value; render()" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold cursor-pointer">
+                                <option value="daily" ${state.report.period === 'daily' ? 'selected' : ''}>ڕۆژانە</option>
+                                <option value="weekly" ${state.report.period === 'weekly' ? 'selected' : ''}>هەفتانە</option>
+                                <option value="monthly" ${state.report.period === 'monthly' ? 'selected' : ''}>مانگانە</option>
+                            </select>
+                        </div>
+                        
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-bold mb-2 text-gray-300">هەڵبژاردنی بەروار ${state.report.period === 'monthly' ? '(مانگ)' : ''}</label>
+                            <input type="${state.report.period === 'monthly' ? 'month' : 'date'}" 
+                                onchange="state.report.date = this.value; render()" 
+                                value="${state.report.date}" 
+                                class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold cursor-pointer text-center font-mono">
+                        </div>
+                    </div>
+
+                    <button onclick="downloadExcel(getFilteredData(), 'Attendance_Report_${state.report.period}_${state.report.date.replace(/-/g, '')}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl transition duration-300 shadow-lg shadow-green-500/30 text-lg flex items-center justify-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        دابەزاندنی ڕاپۆرت (Excel/CSV)
+                        <span class="bg-white text-green-500 px-2 py-0.5 rounded-full text-xs font-black">${filteredData.length} تۆمار</span>
+                    </button>
+                </div>
+
+                <div class="admin-card rounded-xl overflow-hidden shadow-lg">
+                    <div class="p-4 bg-gray-700">
+                        <h3 class="text-xl font-bold text-gray-100">${titleText}</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="report-table w-full text-right text-sm">
+                            <thead>
+                                <tr>
+                                    <th class="w-12 text-center">#</th>
+                                    <th>ناوی مامۆستا</th>
+                                    <th class="w-32">بەروار</th>
+                                    <th class="w-28">ڕۆژ</th>
+                                    <th class="w-24 bg-green-900/50">کاتی هاتن</th>
+                                    <th class="w-24 bg-red-900/50">کاتی ڕۆیشتن</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${filteredData.length === 0 
+                                    ? `<tr><td colspan="6" class="text-center py-6 text-gray-400 font-bold">هیچ تۆمارێک بۆ ئەم ماوەیە نییە.</td></tr>`
+                                    : filteredData.map((item, index) => `
+                                    <tr class="hover:bg-gray-700/50 transition duration-150">
+                                        <td class="text-center text-gray-400">${index + 1}</td>
+                                        <td class="font-bold text-white">${item.teacherName}</td>
+                                        <td>${formatDateForDisplay(item.date)}</td>
+                                        <td>${getKurdishDay(item.date)}</td>
+                                        <td class="time-entry">${item.entryTime || 'نەهاتووە'}</td>
+                                        <td class="time-exit">${item.exitTime || 'نەڕۆیشتووە'}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        // --- Main Render Logic ---
+
+        function render() {
+            const app = document.getElementById('app');
+            const nav = document.getElementById('navigation');
+            
+            document.body.classList.remove('admin-mode');
+            if (state.currentView === 'admin') {
+                document.body.classList.add('admin-mode');
+            }
+
+            // Navigation Rendering
+            nav.innerHTML = `
+                <div class="max-w-7xl mx-auto px-4">
+                    <div class="flex gap-4 justify-center bg-white ${state.currentView === 'admin' ? 'admin-card' : 'shadow'} rounded-2xl p-2 transition-colors duration-300">
+                        <button onclick="state.currentView='teacher'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'teacher' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">مامۆستا (تۆمارکردن)</button>
+                        ${state.isAdminAuthenticated 
+                            ? `<button onclick="state.currentView='admin'; loadAttendanceData(); render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'admin' ? 'bg-yellow-500 text-gray-900 shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">ئەدمین (ڕاپۆرت)</button>`
+                            : `<button onclick="state.currentView='admin'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'admin' ? 'bg-red-500 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">ئەدمین (چوونەژوورەوە)</button>`
+                        }
+                    </div>
+                </div>`;
+
+            // Content Rendering
+            let content = '';
+            if (state.currentView === 'admin' && !state.isAdminAuthenticated) {
+                content = renderAdminLogin();
+            } else if (state.currentView === 'admin' && state.isAdminAuthenticated) {
+                content = renderAdminView();
+            } else {
+                content = renderTeacherView();
+            }
+            app.innerHTML = content;
+            
+            if (state.currentView === 'teacher' && document.getElementById('teacherName')) {
+                document.getElementById('teacherName').value = state.teacherName;
+            }
+        }
+
+        // --- Initial Load & Setup ---
+        
+        function initializeApp() {
+            // Setup initial structure in the body
+            document.body.innerHTML = `
+                <div id="navigation" class="fixed top-0 left-0 right-0 z-50 p-4 pt-6 bg-transparent"></div>
+                <div id="app" class="w-full"></div>
+                <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900/80 z-[9999] flex flex-col items-center justify-center opacity-0 transition-opacity duration-300">
+                    <div class="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mb-4"></div>
+                    <p id="loadingText" class="text-white font-bold">داتاکان بار دەکرێن...</p>
+                </div>
+            `;
+            
+            // Start the application logic
+            render(); 
+            loadAttendanceData(); 
+        }
+
+        // Start everything when the page is fully loaded
+        document.addEventListener('DOMContentLoaded', initializeApp);
+    </script>
 </body>
 </html>
-
