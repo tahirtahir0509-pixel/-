@@ -372,6 +372,12 @@
                 const parts = selectedDateStr.split('-'); 
                 const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; 
                 filtered = state.attendanceData.filter(item => item.date === formattedDate);
+            } else if (state.report.period === 'yearly') {
+                const selectedYear = selectedDateStr.split('-')[0];
+                filtered = state.attendanceData.filter(item => {
+                    const yearOfItem = item.date.split('/')[2];
+                    return yearOfItem === selectedYear;
+                });
             } else {
                 const today = new Date(selectedDateStr);
                 if (state.report.period === 'weekly') {
@@ -391,7 +397,11 @@
                     return itemDate >= startDate && itemDate <= endDate;
                 });
             }
-            return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+            return filtered.sort((a, b) => {
+                const da = new Date(a.date.split('/')[2], a.date.split('/')[0]-1, a.date.split('/')[1]);
+                const db = new Date(b.date.split('/')[2], b.date.split('/')[0]-1, b.date.split('/')[1]);
+                return db - da;
+            });
         }
         
         function renderTeacherView() {
@@ -429,6 +439,20 @@
         
         function renderAdminView() {
             const filteredData = getFilteredData();
+            let dateInputHtml = '';
+            
+            if (state.report.period === 'yearly') {
+                // بۆ ساڵانە تەنها لیستێکی ساڵەکان نیشان دەدەین
+                const currentYear = new Date().getFullYear();
+                let options = '';
+                for(let y = currentYear; y >= 2023; y--) {
+                    options += `<option value="${y}-01-01" ${state.report.date.startsWith(y) ? 'selected' : ''}>${y}</option>`;
+                }
+                dateInputHtml = `<select onchange="state.report.date = this.value; render()" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold text-center">${options}</select>`;
+            } else {
+                dateInputHtml = `<input type="${state.report.period === 'monthly' ? 'month' : 'date'}" onchange="state.report.date = this.value; render()" value="${state.report.date}" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white text-center">`;
+            }
+
             return `
             <div class="max-w-7xl mx-auto px-4 py-8">
                 <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
@@ -443,15 +467,16 @@
                                 <option value="daily" ${state.report.period === 'daily' ? 'selected' : ''}>ڕۆژانە</option>
                                 <option value="weekly" ${state.report.period === 'weekly' ? 'selected' : ''}>هەفتانە</option>
                                 <option value="monthly" ${state.report.period === 'monthly' ? 'selected' : ''}>مانگانە</option>
+                                <option value="yearly" ${state.report.period === 'yearly' ? 'selected' : ''}>ساڵانە</option>
                             </select>
                         </div>
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-bold mb-2 text-gray-300">هەڵبژاردنی بەروار</label>
-                            <input type="${state.report.period === 'monthly' ? 'month' : 'date'}" onchange="state.report.date = this.value; render()" value="${state.report.date}" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white text-center">
+                            <label class="block text-sm font-bold mb-2 text-gray-300">هەڵبژاردنی کات</label>
+                            ${dateInputHtml}
                         </div>
                     </div>
-                    <button onclick="downloadExcel(getFilteredData(), 'ڕاپۆرت')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl transition flex items-center justify-center gap-2">
-                        دابەزاندنی ڕاپۆرت (Excel)
+                    <button onclick="downloadExcel(getFilteredData(), 'ڕاپۆرتی_ئامادەبوون')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl transition flex items-center justify-center gap-2">
+                        دابەزاندنی ڕاپۆرتی ئەم ماوەیە (Excel)
                         <span class="bg-white text-green-500 px-2 py-0.5 rounded-full text-xs font-black">${filteredData.length}</span>
                     </button>
                 </div>
@@ -469,7 +494,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                ${filteredData.length === 0 ? `<tr><td colspan="6" class="text-center py-6 text-gray-400">هیچ تۆمارێک نییە.</td></tr>` : filteredData.map((item, index) => `
+                                ${filteredData.length === 0 ? `<tr><td colspan="6" class="text-center py-6 text-gray-400">هیچ تۆمارێک بۆ ئەم ماوەیە نییە.</td></tr>` : filteredData.map((item, index) => `
                                     <tr class="hover:bg-gray-700/50">
                                         <td class="text-center text-gray-400">${index + 1}</td>
                                         <td class="font-bold text-white">${item.teacherName}</td>
