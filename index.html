@@ -8,7 +8,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
-        /* General Styles for RTL and Font */
+        /* شێوازی گشتی بۆ فۆنت و ئاراستەی دەق */
         body { 
             font-family: 'Noto Sans Arabic', sans-serif; 
             background-color: #f0f4f8; 
@@ -16,7 +16,7 @@
             min-height: 100vh;
         }
         
-        /* Fixed Navigation Bar Styling */
+        /* شێوازی بارگۆڕینی سەرەوە */
         #navigation {
             position: fixed;
             top: 0;
@@ -31,7 +31,7 @@
             padding-top: 6rem; 
         }
 
-        /* --- Teacher View Original Styles (Card View) --- */
+        /* شێوازی کارتی مامۆستا */
         body:not(.admin-mode) #app {
             display: flex;
             justify-content: center;
@@ -45,7 +45,7 @@
             padding: 30px;
             border-radius: 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            width: 85%;
+            width: 90%;
             max-width: 400px;
             text-align: center;
             border-top: 6px solid #ff9800;
@@ -78,7 +78,7 @@
             margin-bottom: 25px;
         }
 
-        /* Button group for select view */
+        /* دوگمەکانی هەڵبژاردن */
         .btn-group-select {
             display: flex;
             gap: 12px;
@@ -97,16 +97,9 @@
             color: white;
         }
 
-
-        /* Select and Button Overrides */
-        select { transition: all 0.3s ease; text-align: right; }
-        button:active { transform: scale(0.96); }
-
-        /* Input Field Base (used by both views) */
         .input-field { border: 2px solid #dfe6e9; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .input-field:focus { border-color: #ff9800; background-color: #fff; outline: none; }
 
-        /* Specific select style for teacher view */
         .input-field.teacher-select-style {
             width: 100%;
             padding: 15px;
@@ -117,7 +110,6 @@
             border: 2px solid #dfe6e9;
         }
         
-        /* UPDATED: Extra small custom footer style */
         .tiny-footer {
             margin-top: 1.5rem; 
             font-size: 9px; 
@@ -127,40 +119,44 @@
             text-align: center;
         }
 
-
-        /* Admin Mode Styles (Keeping these intact) */
+        /* شێوازی بەشی ئەدمین */
         body.admin-mode { background-color: #1e293b; color: #f1f5f9; }
         .admin-card { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(148, 163, 184, 0.1); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3); }
         .admin-mode .input-field { background-color: #1e293b; border-color: #334155; color: white; }
-        .admin-mode .input-field:focus { border-color: #ff9800; box-shadow: 0 0 15px rgba(255, 152, 0, 0.3); }
         .admin-mode .bg-white { background-color: #334155 !important; }
         .admin-mode .text-gray-800 { color: #f1f5f9 !important; }
-        .admin-mode .text-gray-600 { color: #cbd5e1 !important; }
 
-        /* Report Table Styles */
-        .report-table th { background-color: #f9fafb; color: #1f2937; }
-        .admin-mode .report-table th { background-color: #475569; color: #f1f5f9; }
-        .report-table td, .report-table th { padding: 12px; border: 1px solid #e5e7eb; }
+        /* خشتەی ڕاپۆرت */
+        .report-table th { background-color: #f9fafb; color: #1f2937; padding: 12px; border: 1px solid #e5e7eb; }
+        .admin-mode .report-table th { background-color: #475569; color: #f1f5f9; border-color: #475569; }
+        .report-table td { padding: 12px; border: 1px solid #e5e7eb; }
+        .admin-mode .report-table td { border-color: #475569; }
         .report-table { border-collapse: collapse; }
-        .admin-mode .report-table td, .admin-mode .report-table th { border-color: #475569; }
         
-        /* Time Column Specific Styling */
         .time-entry { color: #27ae60; font-weight: bold; }
         .time-exit { color: #e74c3c; font-weight: bold; }
 
-        /* Helper for Loading */
-        #loadingOverlay {
-            transition: opacity 0.3s ease;
+        #custom-alert {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10000;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.1);
+            display: none;
+            font-weight: bold;
         }
     </style>
 </head>
 <body class="min-h-screen">
+    <div id="custom-alert"></div>
 
     <script>
-        // ⚠️ لینکی Web App ە نوێیەکەت لێرە دابنێ.
-        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwq_J4VSLm2PH_fD_Hdc3B0OLO4S4T8advLXC-G2kgCVHH1V7EEpwG5sN0XBoYRhfhT/exec"; // گۆڕینی بە لینکەکەی خۆت
+        // لینک بەستەرەکە لێرەدایە
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwq_J4VSLm2PH_fD_Hdc3B0OLO4S4T8advLXC-G2kgCVHH1V7EEpwG5sN0XBoYRhfhT/exec";
         
-        // گۆڕاوە جیهانییەکان
         let state = {
             currentView: 'teacher', 
             isAdminAuthenticated: false,
@@ -178,22 +174,31 @@
             login: { username: '', password: '' },
             report: {
                 period: 'daily', 
-                date: new Date().toISOString().split('T')[0] // today's date YYYY-MM-DD
+                date: new Date().toISOString().split('T')[0]
             },
             teacherName: ''
         };
 
         const TEACHERS_LIST = state.teachers.map(name => `<option value="${name}">${name}</option>`).join('');
 
-        // --- Utility Functions ---
+        function showAlert(text, type = 'info') {
+            const alertEl = document.getElementById('custom-alert');
+            alertEl.innerText = text;
+            alertEl.style.display = 'block';
+            if (type === 'error') {
+                alertEl.style.backgroundColor = '#fee2e2';
+                alertEl.style.color = '#991b1b';
+            } else {
+                alertEl.style.backgroundColor = '#dcfce7';
+                alertEl.style.color = '#166534';
+            }
+            setTimeout(() => { alertEl.style.display = 'none'; }, 3000);
+        }
 
-        // بۆ گۆڕینی داتای مێتا و دروستکردنی فایلی Excel (CSV)
         function convertToCSV(data) {
-            // سەر ستوونەکان
             const header = ["ناوی مامۆستا", "بەروار", "ڕۆژ", "کاتی هاتن", "کاتی ڕۆیشتن"];
             const rows = data.map(row => [
                 row.teacherName,
-                // گۆڕینی فۆرماتی MM/dd/yyyy بۆ شێوەی ئاسانتر بۆ بینین
                 formatDateForDisplay(row.date),
                 getKurdishDay(row.date),
                 row.entryTime || 'نادیار',
@@ -204,77 +209,51 @@
 
         function downloadExcel(data, filename) {
             if (!Array.isArray(data) || data.length === 0) {
-                alert("⚠️ ناتوانیت فایلەکە دابەزێنیت چونکە هیچ تۆمارێک نییە.");
+                showAlert("⚠️ ناتوانیت فایلەکە دابەزێنیت چونکە هیچ تۆمارێک نییە.", "error");
                 return;
             }
-            
             const ws = XLSX.utils.aoa_to_sheet(convertToCSV(data));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "ڕاپۆرتی ئامادەبوون");
-            
-            // چاککردنەوەی ناوی فایل بۆ دڵنیابوونەوە لە نەبوونی کارەکتەری نادروست
             const safeFilename = filename.replace(/[^a-z0-9]/gi, '_'); 
             XLSX.writeFile(wb, safeFilename + ".xlsx");
         }
 
-        // وەرگرتنی ڕۆژی هەفتە بە کوردی
         function getKurdishDay(dateString) {
             let date;
             try {
                  if (dateString.includes('/')) {
-                    // Assuming MM/dd/yyyy from GAS
                     const parts = dateString.split('/');
                     date = new Date(parts[2], parts[0] - 1, parts[1]);
                 } else if (dateString.includes('-')) {
-                    // Assuming YYYY-MM-DD from input[date]
                     const parts = dateString.split('-');
                     date = new Date(parts[0], parts[1] - 1, parts[2]);
-                } else {
-                    return "نادیار";
-                }
-
+                } else return "نادیار";
                 if (isNaN(date.getTime())) return "نادیار";
                 const days = ["یەکشەممە", "دووشەممە", "سێشەممە", "چوارشەممە", "پێنجشەممە", "هەینی", "شەممە"];
                 return days[date.getDay()];
-            } catch (e) {
-                return "نادیار";
-            }
+            } catch (e) { return "نادیار"; }
         }
         
-        // Date formatting helper for display (MM/dd/yyyy -> long date)
         function formatDateForDisplay(dateString) {
             try {
-                // item date is MM/dd/yyyy, convert to ku-IQ long date
                 const parts = dateString.split('/');
                 const date = new Date(parts[2], parts[0] - 1, parts[1]);
                 return date.toLocaleDateString('ku-IQ', { day: 'numeric', month: 'long', year: 'numeric' });
-            } catch (e) {
-                return dateString;
-            }
+            } catch (e) { return dateString; }
         }
 
-        // وەرگرتنی کات بە خولەک بۆ پشکنینی کاتی کار
         function getTimeInMinutes(date) {
             return date.getHours() * 60 + date.getMinutes();
         }
         
-        // --- API Functions ---
-
         async function loadAttendanceData() {
             if (state.currentView === 'teacher' && state.isAdminAuthenticated === false) return; 
-            
-            showLoading("وەرگرتنی داتای پوختکراوی ڕاپۆرت...");
-            
+            showLoading("وەرگرتنی داتای ڕاپۆرت...");
             try {
-                // GAS ئێستا داتا پوخت دەکات
                 const response = await fetch(`${WEB_APP_URL}?action=get`); 
                 const data = await response.json();
-                
-                if (data && Array.isArray(data)) {
-                    state.attendanceData = data;
-                } else {
-                    state.attendanceData = [];
-                }
+                state.attendanceData = (data && Array.isArray(data)) ? data : [];
             } catch (error) {
                 console.error("Error loading data:", error);
                 document.getElementById('loadingText').innerText = "کێشە لە وەرگرتنی داتا ڕوویدا.";
@@ -287,79 +266,52 @@
 
         async function submitData(teacherName, type) {
             var messageDiv = document.getElementById(`message-general`); 
-            
             if (!teacherName || teacherName === '') {
-                showMessage(messageDiv, "⚠️ تکایە سەرەتا ناوی خۆت لە لیستەکە هەڵبژێرە!", "error");
+                showMessage(messageDiv, "⚠️ تکایە سەرەتا ناوی خۆت هەڵبژێرە!", "error");
                 return;
             }
 
-            // --- ✅ گەڕاندنەوەی سنووری کات (Time Gates) ---
             var now = new Date();
             var currentTime = getTimeInMinutes(now);
             const ENTRY_START = 7 * 60 + 30; // 07:30
             const ENTRY_END = 10 * 60;       // 10:00
             const EXIT_START = 10 * 60;      // 10:00
-            const EXIT_END = 16 * 60;        // 16:00 (04:00 PM)
+            const EXIT_END = 19 * 60;        // 19:00 (کاتژمێر 07:00ی ئێوارە)
 
-            if (type === 'هاتن') {
-                if (currentTime < ENTRY_START || currentTime >= ENTRY_END) {
-                    showMessage(messageDiv, "⛔ ناتوانیت ئێستا تۆماری هاتن بکەیت. کاتی تۆمارکردنی هاتن: 07:30 تا 10:00 بەیانی.", "error");
-                    return;
-                }
-            } else if (type === 'ڕۆیشتن') {
-                if (currentTime < EXIT_START || currentTime >= EXIT_END) {
-                    showMessage(messageDiv, "⛔ ناتوانیت ئێستا تۆماری ڕۆیشتن بکەیت. کاتی تۆمارکردنی ڕۆیشتن: 10:00 بەیانی تا 05:00 ئێوارە.", "error");
-                    return;
-                }
+            if (type === 'هاتن' && (currentTime < ENTRY_START || currentTime >= ENTRY_END)) {
+                showMessage(messageDiv, "⛔ کاتی تۆمارکردنی هاتن: 07:30 تا 10:00 بەیانییە.", "error");
+                return;
+            } else if (type === 'ڕۆیشتن' && (currentTime < EXIT_START || currentTime >= EXIT_END)) {
+                showMessage(messageDiv, "⛔ کاتی تۆمارکردنی ڕۆیشتن: 10:00 تا 07:00ی ئێوارەیە.", "error");
+                return;
             }
-            // --- کۆتایی سنووری کات ---
             
             showMessage(messageDiv, "⏳ ...تکایە چاوەڕێ بە", "pending");
-            
             var formData = new FormData();
             formData.append("teacherName", teacherName);
             formData.append("type", type);
 
             try {
-                const response = await fetch(WEB_APP_URL, {
-                    method: "POST",
-                    body: formData,
-                });
+                const response = await fetch(WEB_APP_URL, { method: "POST", body: formData });
                 const data = await response.text();
-
                 if (data.includes("SUCCESS")) {
                     const time = now.getHours().toString().padStart(2, '0') + ":" + now.getMinutes().toString().padStart(2, '0');
-                    const date = now.toLocaleDateString('ku-IQ');
-                    
-                    showMessage(messageDiv, `✅ بەڕێز <b>${teacherName}</b><br>تۆماری <b>${type}</b> سەرکەوتوو بوو.<br>کات: ${time} - بەروار: ${date}`, "success");
-                    
-                    setTimeout(function() {
-                        messageDiv.style.display = "none";
-                        state.teacherName = '';
-                        render();
-                    }, 5000);
+                    showMessage(messageDiv, `✅ بەڕێز <b>${teacherName}</b><br>تۆماری <b>${type}</b> سەرکەوتوو بوو.<br>کات: ${time}`, "success");
+                    setTimeout(() => { messageDiv.style.display = "none"; state.teacherName = ''; render(); }, 5000);
                 } else {
-                    showMessage(messageDiv, "❌ کێشە لە تۆمارکردن ڕوویدا. دووبارە تاقی بکەرەوە.", "error");
+                    showMessage(messageDiv, "❌ کێشە لە تۆمارکردن ڕوویدا.", "error");
                 }
-            } catch (error) {
-                showMessage(messageDiv, "❌ کێشە لە پەیوەندی: " + error.message, "error");
-            }
+            } catch (error) { showMessage(messageDiv, "❌ کێشە لە پەیوەندی: " + error.message, "error"); }
         }
 
-        // --- UI Helper Functions (UNCHANGED) ---
-        
         function showMessage(el, text, type) {
             el.style.display = "block";
-            el.className = "";
             let baseStyle = "margin-top: 20px; padding: 12px; border-radius: 10px; font-size: 14px; text-align: right;";
-
             if (type === 'success') {
-                el.className = "success";
                 el.style.cssText = baseStyle + " background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb;";
             } else if (type === 'error') {
-                el.className = "error";
                 el.style.cssText = baseStyle + " background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb;";
-            } else if (type === 'pending') {
+            } else {
                 el.style.cssText = baseStyle + " background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba;";
             }
             el.innerHTML = text;
@@ -374,167 +326,92 @@
 
         function hideLoading() {
             const overlay = document.getElementById('loadingOverlay');
-            overlay.classList.remove('opacity-100');
-            overlay.classList.add('opacity-0');
-            setTimeout(() => {
-                overlay.classList.add('hidden');
-            }, 300);
+            overlay.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
         }
         
-        // --- Admin Logic ---
-
         async function handleLogin() {
             const { username, password } = state.login;
-            
             if (!username || !password) {
-                document.getElementById('loadingText').innerText = "تکایە هەردوو ناوی بەکارهێنەر و وشەی نهێنی بنووسە.";
-                showLoading("تکایە هەردوو ناوی بەکارهێنەر و وشەی نهێنی بنووسە.");
-                setTimeout(hideLoading, 2000);
+                showAlert("تکایە هەردوو خانەکە پڕ بکەرەوە.", "error");
                 return;
             }
-
-            showLoading("پشکنینی زانیاری چوونەژوورەوە...");
-
+            showLoading("پشکنینی زانیاری...");
             try {
                 const formData = new FormData();
                 formData.append("action", "login");
                 formData.append("username", username);
                 formData.append("password", password);
-
-                const response = await fetch(WEB_APP_URL, {
-                    method: 'POST',
-                    body: formData,
-                });
-                
+                const response = await fetch(WEB_APP_URL, { method: 'POST', body: formData });
                 const result = await response.text();
-
                 if (result.includes("SUCCESS")) { 
                     state.isAdminAuthenticated = true;
                     state.login = { username: '', password: '' };
                     await loadAttendanceData(); 
-                    render();
                 } else {
-                    document.getElementById('loadingText').innerText = "ناوی بەکارهێنەر یان وشەی نهێنی هەڵەیە!";
-                    setTimeout(hideLoading, 2000);
+                    showAlert("ناوی بەکارهێنەر یان وشەی نهێنی هەڵەیە!", "error");
+                    hideLoading();
                 }
             } catch (error) {
-                document.getElementById('loadingText').innerText = "کێشە لە پەیوەندی بە سێرڤەر. دووبارە تاقی بکەرەوە.";
-                setTimeout(hideLoading, 2000);
-            } finally {
-                // hideLoading() only after showing the final status
-                if (!state.isAdminAuthenticated) {
-                     hideLoading();
-                }
+                showAlert("کێشە لە پەیوەندی ڕوویدا.", "error");
+                hideLoading();
             }
         }
         
         function handleLogout() {
             state.isAdminAuthenticated = false;
-            state.login = { username: '', password: '' };
             state.currentView = 'teacher';
             render();
         }
 
-        // 🚨 چارەسەری کۆتایی بۆ کێشەی Excel (filteredData) - چاککراو
         function getFilteredData() {
-            // بەرواری هەڵبژێردراو بە شێوازی YYYY-MM-DD
             const selectedDateStr = state.report.date; 
-            
-            let startDate, endDate;
-            let filtered = [];
+            let startDate, endDate, filtered = [];
 
             if (state.report.period === 'daily') {
-                // بۆ daily: گۆڕینی YYYY-MM-DD بۆ MM/dd/yyyy بۆ بەراوردکردن لەگەڵ داتای GAS
                 const parts = selectedDateStr.split('-'); 
                 const formattedDate = `${parts[1]}/${parts[2]}/${parts[0]}`; 
-                
                 filtered = state.attendanceData.filter(item => item.date === formattedDate);
-                
-            } else if (state.report.period === 'weekly') {
-                // بۆ weekly: دۆزینەوەی دەستپێک و کۆتایی هەفتە
+            } else {
                 const today = new Date(selectedDateStr);
-                const dayOfWeek = today.getDay(); // 0 (Sun) to 6 (Sat)
-                const daysToSubtract = (dayOfWeek + 1) % 7; // دەستپێکی هەفتە یەکشەممە بێت
-
-                startDate = new Date(today);
-                startDate.setDate(today.getDate() - daysToSubtract);
-                startDate.setHours(0, 0, 0, 0);
-
-                endDate = new Date(startDate);
-                endDate.setDate(startDate.getDate() + 6);
-                endDate.setHours(23, 59, 59, 999);
-                
-            } else if (state.report.period === 'monthly') {
-                // بۆ monthly: دۆزینەوەی دەستپێک و کۆتایی مانگ
-                const year = parseInt(selectedDateStr.split('-')[0]);
-                const month = parseInt(selectedDateStr.split('-')[1]) - 1; 
-                
-                startDate = new Date(year, month, 1);
-                endDate = new Date(year, month + 1, 0); 
-                startDate.setHours(0, 0, 0, 0);
-                endDate.setHours(23, 59, 59, 999);
-            }
-
-            // Filter for weekly/monthly
-            if (state.report.period !== 'daily') {
-                 filtered = state.attendanceData.filter(item => {
-                    let itemDate;
-                    try {
-                        // Item date is MM/dd/yyyy from GAS
-                        const dateParts = item.date.split('/');
-                        itemDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
-                        itemDate.setHours(0, 0, 0, 0); 
-                    } catch(e) {
-                        return false;
-                    }
-
-                    if (isNaN(itemDate.getTime())) return false;
+                if (state.report.period === 'weekly') {
+                    startDate = new Date(today);
+                    startDate.setDate(today.getDate() - ((today.getDay() + 1) % 7));
+                    endDate = new Date(startDate);
+                    endDate.setDate(startDate.getDate() + 6);
+                } else {
+                    const year = parseInt(selectedDateStr.split('-')[0]);
+                    const month = parseInt(selectedDateStr.split('-')[1]) - 1; 
+                    startDate = new Date(year, month, 1);
+                    endDate = new Date(year, month + 1, 0); 
+                }
+                filtered = state.attendanceData.filter(item => {
+                    const dateParts = item.date.split('/');
+                    const itemDate = new Date(dateParts[2], dateParts[0] - 1, dateParts[1]);
                     return itemDate >= startDate && itemDate <= endDate;
                 });
             }
-            
-            // دڵنیابوونەوە لە ڕیزکردنی دروست
-            return filtered.sort((a, b) => {
-                // گۆڕینی بەروارەکان بۆ ئۆبجێکتی Date بۆ بەراوردکردن 
-                const dateA = new Date(a.date);
-                const dateB = new Date(b.date);
-
-                if (dateA - dateB !== 0) {
-                    return dateB - dateA; // ڕیزکردن بەپێی بەرواری نوێ
-                }
-                
-                // ئەگەر بەروارەکان یەکسان بن، ڕیزکردن بەپێی کاتی هاتن
-                const timeA = new Date(`2000/01/01 ${a.entryTime}`);
-                const timeB = new Date(`2000/01/01 ${b.entryTime}`);
-                return timeA - timeB; // کاتی هاتنی پێشتر
-            });
+            return filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
         }
         
-        // --- Render Functions (Admin View Updated for summarized data) ---
-
         function renderTeacherView() {
             return `
             <div class="teacher-card-style" id="teacher-view">
                 <div class="teacher-logo-style">
-                    <img src="https://i.ibb.co/7xTBmQJ8/logo-gzng.png" alt="Logo Gzing">
+                    <img src="https://i.ibb.co/7xTBmQJ8/logo-gzng.png" alt="Gzng Logo">
                 </div>
-                
                 <h2 class="teacher-h2-style">قوتابخانەی بنەڕەتی گزنگ</h2>
                 <p class="teacher-p-style">تۆمارکردنی ئامادەبوونی مامۆستایان</p>
-
-                <select id="teacherName" onchange="state.teacherName = this.value" value="${state.teacherName}" class="input-field teacher-select-style">
-                    <option value="" disabled ${state.teacherName === '' ? 'selected' : ''}>🔽 تکایە ناوەکەت هەڵبژێرە...</option>
+                <select id="teacherName" onchange="state.teacherName = this.value" class="input-field teacher-select-style">
+                    <option value="" disabled ${state.teacherName === '' ? 'selected' : ''}>🔽 ناوی خۆت هەڵبژێرە...</option>
                     ${TEACHERS_LIST}
                 </select>
-
                 <div class="btn-group-select">
                     <button type="button" class="btn-select-style btn-in" onclick="submitData(state.teacherName, 'هاتن')">🟢 هاتن</button>
                     <button type="button" class="btn-select-style btn-out" onclick="submitData(state.teacherName, 'ڕۆیشتن')">🔴 ڕۆیشتن</button>
                 </div>
-
                 <div id="message-general" style="display:none;"></div>
-                
-                <div class="tiny-footer text-gray-500 mt-6">Developed by Tahir Tahir</div>
+                <div class="tiny-footer">Developed by Tahir Tahir</div>
             </div>`;
         }
 
@@ -543,100 +420,64 @@
             <div class="admin-card max-w-sm mx-auto p-8 rounded-3xl text-center my-20">
                 <h2 class="text-3xl font-black text-white mb-6">چوونەژوورەوەی ئەدمین</h2>
                 <div class="space-y-4">
-                    <input type="text" id="username" placeholder="ناوی بەکارهێنەر" oninput="state.login.username = this.value" value="${state.login.username}" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold text-lg">
-                    <input type="password" id="password" placeholder="وشەی نهێنی" oninput="state.login.password = this.value" value="${state.login.password}" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold text-lg">
-                    <button onclick="handleLogin()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-black py-3 rounded-xl transition duration-300 shadow-lg shadow-yellow-500/30 text-lg mt-4">چوونەژوورەوە</button>
+                    <input type="text" placeholder="ناوی بەکارهێنەر" oninput="state.login.username = this.value" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold">
+                    <input type="password" placeholder="وشەی نهێنی" oninput="state.login.password = this.value" class="input-field w-full rounded-xl px-5 py-3 text-center font-bold">
+                    <button onclick="handleLogin()" class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-black py-3 rounded-xl transition text-lg mt-4">چوونەژوورەوە</button>
                 </div>
             </div>`;
         }
         
         function renderAdminView() {
             const filteredData = getFilteredData();
-            let titleText = '';
-            
-            if (state.report.period === 'daily') {
-                // Format the report date from YYYY-MM-DD
-                const parts = state.report.date.split('-'); 
-                const dateDisplay = formatDateForDisplay(`${parts[1]}/${parts[2]}/${parts[0]}`); 
-                titleText = `ڕاپۆرتی ڕۆژانە بۆ: ${dateDisplay}`;
-            } else if (state.report.period === 'weekly') {
-                const today = new Date(state.report.date);
-                const dayOfWeek = today.getDay(); 
-                const daysToSubtract = (dayOfWeek + 1) % 7; 
-                let start = new Date(today);
-                start.setDate(today.getDate() - daysToSubtract);
-                let end = new Date(start);
-                end.setDate(start.getDate() + 6);
-                titleText = `ڕاپۆرتی هەفتانە: ${start.toLocaleDateString('ku-IQ')} تا ${end.toLocaleDateString('ku-IQ')}`;
-            } else if (state.report.period === 'monthly') {
-                titleText = `ڕاپۆرتی مانگانە بۆ: ${new Date(state.report.date).toLocaleDateString('ku-IQ', { year: 'numeric', month: 'long' })}`;
-            }
-
             return `
             <div class="max-w-7xl mx-auto px-4 py-8">
                 <div class="flex justify-between items-center mb-6 border-b border-gray-700 pb-4">
                     <h1 class="text-3xl font-black text-white">🗄️ پانێڵی ئەدمین</h1>
-                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl transition shadow-md">دەرچوون</button>
+                    <button onclick="handleLogout()" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded-xl transition">دەرچوون</button>
                 </div>
-                
                 <div class="admin-card rounded-xl p-6 mb-8">
-                    <h2 class="text-xl font-bold mb-4 border-b border-gray-700 pb-3 text-yellow-500">کۆنترۆڵی ڕاپۆرت</h2>
-                    
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
                         <div>
                             <label class="block text-sm font-bold mb-2 text-gray-300">ماوەی ڕاپۆرت</label>
-                            <select onchange="state.report.period = this.value; render()" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold cursor-pointer">
+                            <select onchange="state.report.period = this.value; render()" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold">
                                 <option value="daily" ${state.report.period === 'daily' ? 'selected' : ''}>ڕۆژانە</option>
                                 <option value="weekly" ${state.report.period === 'weekly' ? 'selected' : ''}>هەفتانە</option>
                                 <option value="monthly" ${state.report.period === 'monthly' ? 'selected' : ''}>مانگانە</option>
                             </select>
                         </div>
-                        
                         <div class="md:col-span-2">
-                            <label class="block text-sm font-bold mb-2 text-gray-300">هەڵبژاردنی بەروار ${state.report.period === 'monthly' ? '(مانگ)' : ''}</label>
-                            <input type="${state.report.period === 'monthly' ? 'month' : 'date'}" 
-                                onchange="state.report.date = this.value; render()" 
-                                value="${state.report.date}" 
-                                class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white font-bold cursor-pointer text-center font-mono">
+                            <label class="block text-sm font-bold mb-2 text-gray-300">هەڵبژاردنی بەروار</label>
+                            <input type="${state.report.period === 'monthly' ? 'month' : 'date'}" onchange="state.report.date = this.value; render()" value="${state.report.date}" class="input-field w-full rounded-xl px-4 py-3 bg-gray-700 text-white text-center">
                         </div>
                     </div>
-
-                    <button onclick="downloadExcel(getFilteredData(), 'Attendance_Report_${state.report.period}_${state.report.date.replace(/-/g, '')}')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl transition duration-300 shadow-lg shadow-green-500/30 text-lg flex items-center justify-center gap-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
-                        دابەزاندنی ڕاپۆرت (Excel/CSV)
-                        <span class="bg-white text-green-500 px-2 py-0.5 rounded-full text-xs font-black">${filteredData.length} تۆمار</span>
+                    <button onclick="downloadExcel(getFilteredData(), 'ڕاپۆرت')" class="w-full bg-green-500 hover:bg-green-600 text-white font-black py-3 rounded-xl transition flex items-center justify-center gap-2">
+                        دابەزاندنی ڕاپۆرت (Excel)
+                        <span class="bg-white text-green-500 px-2 py-0.5 rounded-full text-xs font-black">${filteredData.length}</span>
                     </button>
                 </div>
-
                 <div class="admin-card rounded-xl overflow-hidden shadow-lg">
-                    <div class="p-4 bg-gray-700">
-                        <h3 class="text-xl font-bold text-gray-100">${titleText}</h3>
-                    </div>
                     <div class="overflow-x-auto">
                         <table class="report-table w-full text-right text-sm">
                             <thead>
                                 <tr>
                                     <th class="w-12 text-center">#</th>
                                     <th>ناوی مامۆستا</th>
-                                    <th class="w-32">بەروار</th>
-                                    <th class="w-28">ڕۆژ</th>
-                                    <th class="w-24 bg-green-900/50">کاتی هاتن</th>
-                                    <th class="w-24 bg-red-900/50">کاتی ڕۆیشتن</th>
+                                    <th>بەروار</th>
+                                    <th>ڕۆژ</th>
+                                    <th>هاتن</th>
+                                    <th>ڕۆیشتن</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                ${filteredData.length === 0 
-                                    ? `<tr><td colspan="6" class="text-center py-6 text-gray-400 font-bold">هیچ تۆمارێک بۆ ئەم ماوەیە نییە.</td></tr>`
-                                    : filteredData.map((item, index) => `
-                                    <tr class="hover:bg-gray-700/50 transition duration-150">
+                                ${filteredData.length === 0 ? `<tr><td colspan="6" class="text-center py-6 text-gray-400">هیچ تۆمارێک نییە.</td></tr>` : filteredData.map((item, index) => `
+                                    <tr class="hover:bg-gray-700/50">
                                         <td class="text-center text-gray-400">${index + 1}</td>
                                         <td class="font-bold text-white">${item.teacherName}</td>
                                         <td>${formatDateForDisplay(item.date)}</td>
                                         <td>${getKurdishDay(item.date)}</td>
-                                        <td class="time-entry">${item.entryTime || 'نەهاتووە'}</td>
-                                        <td class="time-exit">${item.exitTime || 'نەڕۆیشتووە'}</td>
-                                    </tr>
-                                `).join('')}
+                                        <td class="time-entry">${item.entryTime || '-'}</td>
+                                        <td class="time-exit">${item.exitTime || '-'}</td>
+                                    </tr>`).join('')}
                             </tbody>
                         </table>
                     </div>
@@ -644,67 +485,32 @@
             </div>`;
         }
 
-        // --- Main Render Logic ---
-
         function render() {
             const app = document.getElementById('app');
             const nav = document.getElementById('navigation');
-            
-            document.body.classList.remove('admin-mode');
-            if (state.currentView === 'admin') {
-                document.body.classList.add('admin-mode');
-            }
-
-            // Navigation Rendering
+            document.body.classList.toggle('admin-mode', state.currentView === 'admin');
             nav.innerHTML = `
                 <div class="max-w-7xl mx-auto px-4">
-                    <div class="flex gap-4 justify-center bg-white ${state.currentView === 'admin' ? 'admin-card' : 'shadow'} rounded-2xl p-2 transition-colors duration-300">
-                        <button onclick="state.currentView='teacher'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'teacher' ? 'bg-orange-500 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">مامۆستا (تۆمارکردن)</button>
-                        ${state.isAdminAuthenticated 
-                            ? `<button onclick="state.currentView='admin'; loadAttendanceData(); render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'admin' ? 'bg-yellow-500 text-gray-900 shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">ئەدمین (ڕاپۆرت)</button>`
-                            : `<button onclick="state.currentView='admin'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold transition duration-200 ${state.currentView === 'admin' ? 'bg-red-500 text-white shadow-lg' : 'bg-gray-100 hover:bg-gray-200 text-gray-700'}">ئەدمین (چوونەژوورەوە)</button>`
-                        }
+                    <div class="flex gap-4 justify-center bg-white ${state.currentView === 'admin' ? 'admin-card' : 'shadow'} rounded-2xl p-2">
+                        <button onclick="state.currentView='teacher'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold ${state.currentView === 'teacher' ? 'bg-orange-500 text-white' : 'bg-gray-100 text-gray-700'}">مامۆستا</button>
+                        <button onclick="state.currentView='admin'; render()" class="w-1/2 md:w-auto px-6 py-3 rounded-xl font-bold ${state.currentView === 'admin' ? (state.isAdminAuthenticated ? 'bg-yellow-500 text-gray-900' : 'bg-red-500 text-white') : 'bg-gray-100 text-gray-700'}">ئەدمین</button>
                     </div>
                 </div>`;
-
-            // Content Rendering
-            let content = '';
-            if (state.currentView === 'admin' && !state.isAdminAuthenticated) {
-                content = renderAdminLogin();
-            } else if (state.currentView === 'admin' && state.isAdminAuthenticated) {
-                content = renderAdminView();
-            } else {
-                content = renderTeacherView();
-            }
-            app.innerHTML = content;
-            
-            if (state.currentView === 'teacher' && document.getElementById('teacherName')) {
-                document.getElementById('teacherName').value = state.teacherName;
-            }
+            app.innerHTML = (state.currentView === 'admin' && !state.isAdminAuthenticated) ? renderAdminLogin() : (state.currentView === 'admin' ? renderAdminView() : renderTeacherView());
+            if (state.currentView === 'teacher' && document.getElementById('teacherName')) document.getElementById('teacherName').value = state.teacherName;
         }
 
-        // --- Initial Load & Setup ---
-        
         function initializeApp() {
-            // Setup initial structure in the body
-            document.body.innerHTML = `
-                <div id="navigation" class="fixed top-0 left-0 right-0 z-50 p-4 pt-6 bg-transparent"></div>
-                <div id="app" class="w-full"></div>
-                <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900/80 z-[9999] flex flex-col items-center justify-center opacity-0 transition-opacity duration-300">
+            document.body.innerHTML += `
+                <div id="navigation"></div><div id="app"></div>
+                <div id="loadingOverlay" class="hidden fixed inset-0 bg-gray-900/80 z-[9999] flex flex-col items-center justify-center opacity-0 transition-opacity">
                     <div class="animate-spin rounded-full h-12 w-12 border-4 border-yellow-500 border-t-transparent mb-4"></div>
-                    <p id="loadingText" class="text-white font-bold">داتاکان بار دەکرێن...</p>
-                </div>
-            `;
-            
-            // Start the application logic
+                    <p id="loadingText" class="text-white font-bold">چاوەڕێ بە...</p>
+                </div>`;
             render(); 
             loadAttendanceData(); 
         }
-
-        // Start everything when the page is fully loaded
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
-
-
